@@ -21,6 +21,7 @@ let system =
     timeInterval : 100,
 
     origin : {x: 10, y: -2},
+    xMax: 0,
     point : {},
     tempPoint : {},
 
@@ -35,7 +36,7 @@ let system =
 
     init()
     {
-        this.canvasWidth = width
+        this.canvasWidth = 5000
         this.canvasHeight = height
 
         this.generate()
@@ -48,13 +49,14 @@ let system =
             this.finishToGenerate = false
 
             // RESET VALUES
-            resizeCanvas(this.canvasWidth, this.canvasHeight)
             noiseSeed(random(99999))
             this.point = {}
             this.tempPoint = {}
             this.origin = {x: 10, y: -2}
             this.noiseFactor = 0
             background(255)
+
+            resizeCanvas(this.canvasWidth, this.canvasHeight)
     
             // REDRAW LINES
             this.drawLines()
@@ -106,6 +108,11 @@ let system =
         }
         endShape()
     },
+
+    save()
+    {
+        saveCanvas('disturbedLines', 'jpg')
+    }
 }
 
 function draw()
@@ -116,14 +123,15 @@ function draw()
 function datGuiSetup()
 {
     let gui = new dat.GUI()
-    
-    let test = gui.add(system, 'canvasWidth', 0, window.innerWidth)
+
+    // gui.add(system, 'canvasWidth', 0, 5000)
     gui.add(system, 'canvasHeight', 0, window.innerHeight)
-    gui.add(system, 'numberOfLines', 0, 100)
-    gui.add(system, 'stepBetweenLines', 0, 35)
-    gui.add(system, 'factorIncrementation', 0, 30)
+    gui.add(system, 'numberOfLines', 0, 50)
+    gui.add(system, 'stepBetweenLines', 0, 50)
+    gui.add(system, 'factorIncrementation', 0, 100)
     gui.add(system, 'noiseScale', 0, 0.05)
     gui.add(system, 'lineWeight', 0, 5)
     gui.add(system, 'reverse')
+    gui.add(system, 'save')
     gui.add(system, 'generate')
 }
