@@ -1,205 +1,178 @@
-function setup()
-{
-    createCanvas(window.innerWidth * 0.75, 300).parent('canvasContainer')
-    background(255)
+function setup() {
+	createCanvas(window.innerWidth * 0.75, 250).parent('canvasContainer')
+	background(255)
 
-    system.init()
-    datGuiSetup()
+	system.init()
+	datGuiSetup()
 }
 
-let system = 
-{
-    canvasWidth : null,
-    canvasHeight : null,
-    
-    // SYSTEM PROPERTIES
-    numberOfLines : 15,
-    stepBetweenLines : 23,
-    factorIncrementation : 20,
-    lineWeight : 2,
+let system = {
+	canvasWidth: null,
+	canvasHeight: null,
 
-    timeInterval : 100,
+	// SYSTEM PROPERTIES
+	numberOfLines: 23,
+	stepBetweenLines: 23,
+	factorIncrementation: 20,
+	lineWeight: 2,
 
-    // SYSTEM VAR
-    origin : {x: 10, y: -2},
-    xMax: 0,
-    point : {},
-    tempPoint : {},
+	timeInterval: 100,
 
-    // GENERATION FUNCTION VAR
-    lineCounter : 0,
-    finishToGenerate : true,
+	// SYSTEM VAR
+	origin: { x: 10, y: -2 },
+	xMax: 0,
+	point: {},
+	tempPoint: {},
 
-    // REVERS OPTION VAR
-    reverse : true,
-    lines : [],
-    finishToGenerateReverse : true,
-    reverseColor : '#ff0000',
+	// GENERATION FUNCTION VAR
+	lineCounter: 0,
+	finishToGenerate: true,
 
-    // NOISE PROPERTIES
-    noiseScale : 0.008,
-    noiseFactor : 0,
+	// REVERS OPTION VAR
+	reverse: true,
+	lines: [],
+	finishToGenerateReverse: true,
+	reverseColor: '#ff0000',
 
-    init()
-    {
-        this.canvasWidth = 5000
-        this.canvasHeight = height
+	// NOISE PROPERTIES
+	noiseScale: 0.008,
+	noiseFactor: 0,
 
-        this.generate()
-    },
+	init() {
+		this.canvasWidth = 5000
+		this.canvasHeight = height
 
-    generate()
-    {
-        if(this.finishToGenerate && this.finishToGenerateReverse)
-        {
-            this.finishToGenerate = false
+		this.generate()
+	},
 
-            // RESET VALUES
-            noiseSeed(random(99999))
-            this.point = {}
-            this.tempPoint = {}
-            this.origin = {x: 10, y: -2}
-            this.noiseFactor = 0
-            background(255)
+	generate() {
+		if (this.finishToGenerate && this.finishToGenerateReverse) {
+			this.finishToGenerate = false
 
-            // RESET REVERSE VALUE
-            this.lines = []
+			// RESET VALUES
+			noiseSeed(random(99999))
+			this.point = {}
+			this.tempPoint = {}
+			this.origin = { x: 10, y: -2 }
+			this.noiseFactor = 0
+			background(255)
 
-            resizeCanvas(this.canvasWidth, this.canvasHeight)
-    
-            // REDRAW LINES
-            this.drawLines()
-        }
-    },
+			// RESET REVERSE VALUE
+			this.lines = []
 
-    drawLines()
-    {
-        this.lineCounter = 0
-        let drawLineInterval = () =>
-        {
-            if (this.lineCounter < this.numberOfLines)
-            {
-                setTimeout(() =>
-                {
-                    this.drawLine()
-                    this.origin.x += this.stepBetweenLines
-                    this.noiseFactor += this.factorIncrementation
-                    this.lineCounter++
-                    drawLineInterval()
-                }, this.timeInterval)
-            }
-            else
-            {
-                if(this.reverse)
-                {
-                    this.finishToGenerate = true
-                    this.finishToGenerateReverse = false
-                    this.drawReverse()
-                }
-            }
-        }
-        drawLineInterval()
-    },
+			resizeCanvas(this.canvasWidth, this.canvasHeight)
 
-    drawLine()
-    {
+			// REDRAW LINES
+			this.drawLines()
+		}
+	},
 
-        noFill()
-        stroke(0)
-        strokeWeight(this.lineWeight)
+	drawLines() {
+		this.lineCounter = 0
+		let drawLineInterval = () => {
+			if (this.lineCounter < this.numberOfLines) {
+				setTimeout(() => {
+					this.drawLine()
+					this.origin.x += this.stepBetweenLines
+					this.noiseFactor += this.factorIncrementation
+					this.lineCounter++
+					drawLineInterval()
+				}, this.timeInterval)
+			} else {
+				this.finishToGenerate = true
+				// if(this.reverse)
+				// {
+				//     this.finishToGenerateReverse = false
+				//     this.drawReverse()
+				// }
+			}
+		}
+		drawLineInterval()
+	},
 
-        let tab = []
+	drawLine() {
+		noFill()
+		stroke(0)
+		strokeWeight(this.lineWeight)
 
-        beginShape()
-        for (let i = 0; i < this.canvasHeight; i = i + 5)
-        {
+		let tab = []
 
-            this.point.y = i + this.origin.y
-            this.point.x = noise(i * this.noiseScale) * this.noiseFactor + this.origin.x
+		beginShape()
+		for (let i = 0; i < this.canvasHeight; i = i + 5) {
+			this.point.y = i + this.origin.y
+			this.point.x = noise(i * this.noiseScale) * this.noiseFactor + this.origin.x
 
-            curveVertex(this.tempPoint.x, this.tempPoint.y, this.point.x, this.point.y)
+			curveVertex(this.tempPoint.x, this.tempPoint.y, this.point.x, this.point.y)
 
-            // SAVE LINE FOR REVERSE OPTION
-            tab.push(this.point.x)
+			// SAVE LINE FOR REVERSE OPTION
+			tab.push(this.point.x)
 
-            this.tempPoint.x = this.point.x
-            this.tempPoint.y = this.point.y
-        }
-        endShape()
+			this.tempPoint.x = this.point.x
+			this.tempPoint.y = this.point.y
+		}
+		endShape()
 
-        // PUSHING LINE IN THE LINES ARRAY
-        this.lines.push(tab)
-    },
+		// PUSHING LINE IN THE LINES ARRAY
+		this.lines.push(tab)
+	},
 
-    drawReverse()
-    {
-        noFill()
-        stroke(this.reverseColor)
-        strokeWeight(this.lineWeight)
+	drawReverse() {
+		noFill()
+		stroke(this.reverseColor)
+		strokeWeight(this.lineWeight)
 
-        let i = this.lines.length - 1
-        let step = 0
-        let drawLineInterval = () =>
-        {
-            if (i >= 0)
-            {
-                setTimeout(() =>
-                {
-                    // Draw lines
-                    beginShape()
-                    for (let j = 0; j < this.canvasHeight; j++)
-                    {
-                        this.point.x = this.lines[i][j] + this.stepBetweenLines * step * 3 + this.stepBetweenLines
-                        this.point.y = j * 5 + this.origin.y
+		let i = this.lines.length - 1
+		let step = 0
+		let drawLineInterval = () => {
+			if (i >= 0) {
+				setTimeout(() => {
+					// Draw lines
+					beginShape()
+					for (let j = 0; j < this.canvasHeight; j++) {
+						this.point.x = this.lines[i][j] + this.origin.x
+						this.point.y = j * 5 + this.origin.y
 
-                        curveVertex(this.tempPoint.x, this.tempPoint.y, this.point.x, this.point.y)
+						curveVertex(this.tempPoint.x, this.tempPoint.y, this.point.x, this.point.y)
 
-                        this.tempPoint.x = this.point.x
-                        this.tempPoint.y = this.point.y
-                        // curveVertex()
-                    }
-                    endShape()
+						this.tempPoint.x = this.point.x
+						this.tempPoint.y = this.point.y
+						// curveVertex()
+					}
+					endShape()
 
-                    // Update values
-                    this.origin.x += this.stepBetweenLines
-                    this.noiseFactor -= this.factorIncrementation
-                    i--
-                    step++
-                    drawLineInterval()
-                }, this.timeInterval)
-            }
-            else
-            {
-                this.finishToGenerateReverse = true
-            }
-        }
-        drawLineInterval()
-    },
+					// Update values
+					this.origin.x += this.stepBetweenLines
+					this.noiseFactor -= this.factorIncrementation
+					i--
+					step++
+					drawLineInterval()
+				}, this.timeInterval)
+			} else {
+				this.finishToGenerateReverse = true
+			}
+		}
+		drawLineInterval()
+	},
 
-    save()
-    {
-        saveCanvas('disturbedLines', 'png')
-    }
+	save() {
+		saveCanvas('disturbedLines', 'png')
+	},
 }
 
-function draw()
-{
-}
+function draw() {}
 
+function datGuiSetup() {
+	let gui = new dat.GUI({ width: 410 })
 
-function datGuiSetup()
-{
-    let gui = new dat.GUI()
-
-    // gui.add(system, 'canvasWidth', 0, 5000)
-    gui.add(system, 'canvasHeight', 0, window.innerHeight)
-    gui.add(system, 'numberOfLines', 0, 50)
-    gui.add(system, 'stepBetweenLines', 0, 50)
-    gui.add(system, 'factorIncrementation', 0, 100)
-    gui.add(system, 'noiseScale', 0, 0.05)
-    gui.add(system, 'lineWeight', 0, 5)
-    gui.add(system, 'reverse')
-    gui.addColor(system, 'reverseColor');
-    gui.add(system, 'save')
-    gui.add(system, 'generate')
+	// gui.add(system, 'canvasWidth', 0, 5000)
+	gui.add(system, 'canvasHeight', 0, window.innerHeight).name('Largeur')
+	gui.add(system, 'numberOfLines', 0, 50).name('Nombre de lignes')
+	gui.add(system, 'stepBetweenLines', 0, 50).name('Écart entre lignes')
+	gui.add(system, 'factorIncrementation', 0, 100).name("Facteur d'incrémentation")
+	gui.add(system, 'noiseScale', 0, 0.05).name('Facteur de turbulence')
+	gui.add(system, 'lineWeight', 0, 5).name('Épaisseur de ligne')
+	// gui.add(system, 'reverse')
+	// gui.addColor(system, 'reverseColor');
+	gui.add(system, 'save').name('Sauvegarder')
+	gui.add(system, 'generate').name('Générer')
 }
